@@ -38,12 +38,13 @@ private val retrofit = Retrofit.Builder()
     .baseUrl(BASE_URL)
     .build()
 
-// TODO (03) Implement the MarsApiService interface with @GET getProperties returning a String
+// TODO (03) Implement the MarsApiService interface with @GET getProperties returning a  [List] of [MarsProperty] //String
 interface MarsApiService {
     @GET("realestate")
-    fun getProperties():
-//            Call<String>
-            Call<List<MarsProperty>>
+//    fun getProperties():
+////            Call<String>
+//            Call<List<MarsProperty>>
+    suspend fun getProperties(): List<MarsProperty>
 }
 // TODO (04) Create the MarsApi object using Retrofit to implement the MarsApiService
 object MarsApi {
