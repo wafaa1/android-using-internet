@@ -30,18 +30,20 @@ import kotlinx.coroutines.launch
  */
 class OverviewViewModel : ViewModel() {
 
+    enum class MarsApiStatus { LOADING, ERROR, DONE }
+
     // The internal MutableLiveData String that stores the status of the most recent request
-    private val _status = MutableLiveData<String>()
+    private val _status = MutableLiveData<MarsApiStatus>()
 
     // The external immutable LiveData for the request status String
-    val status : LiveData<String>
+    val status : LiveData<MarsApiStatus>
         get() = _status
 
     // The internal MutableLiveData MarsProperty that stores a MarsProperty
-    private val _property = MutableLiveData<MarsProperty>()
+    private val _properties = MutableLiveData<List<MarsProperty>>()
     // The external immutable LiveData for a MarsProperty
-    val property: LiveData<MarsProperty>
-        get() = _property
+    val properties: LiveData<List<MarsProperty>>
+        get() = _properties
 
     /**
      * Call getMarsRealEstateProperties() on init so we can display status immediately.
@@ -55,26 +57,15 @@ class OverviewViewModel : ViewModel() {
      */
     private fun getMarsRealEstateProperties() {
 //        // TODO (05) Call the MarsApi to enqueue the Retrofit request, implementing the callbacks
-//        MarsApi.retrofitService.getProperties().enqueue( object: Callback<List<MarsProperty>> { // changed Call<String> to Call<List<MarsProperty>>
-//            override fun onFailure(call: Call<List<MarsProperty>>, t: Throwable) {
-//                _response.value = "Failure: " + t.message
-//            }
-//
-//            override fun onResponse(call: Call<List<MarsProperty>>, response: Response<List<MarsProperty>>) {
-////                _response.value = response.body()
-//                _response.value = "Success: ${response.body()?.size} Mars properties retrieved"
-//            }
-//        })
-////        _response.value = "Set the Mars API Response here!"
+
         viewModelScope.launch {
+            _status.value = MarsApiStatus.LOADING
             try {
-                var listResult = MarsApi.retrofitService.getProperties()
-//                _status.value = "Success: ${listResult.size} Mars properties retrieved"
-                if (listResult.size > 0) {
-                    _property.value = listResult[0]
-                }
+                _properties.value = MarsApi.retrofitService.getProperties()
+                _status.value = MarsApiStatus.DONE
             } catch (e: Exception) {
-                _status.value = "Failure: ${e.message}"
+                _status.value = MarsApiStatus.ERROR
+                _properties.value = ArrayList()
             }
         }
 
