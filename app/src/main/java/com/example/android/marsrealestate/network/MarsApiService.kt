@@ -24,8 +24,12 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Query
 
 private const val BASE_URL = "https://mars.udacity.com/"
+
+enum class MarsApiFilter(val value: String) { SHOW_RENT("rent"), SHOW_BUY("buy"), SHOW_ALL("all") }
+
 // Moshi
 private val moshi = Moshi.Builder()
     .add(KotlinJsonAdapterFactory())
@@ -44,7 +48,8 @@ interface MarsApiService {
 //    fun getProperties():
 ////            Call<String>
 //            Call<List<MarsProperty>>
-    suspend fun getProperties(): List<MarsProperty>
+//    suspend fun getProperties(): List<MarsProperty>
+    suspend fun getProperties(@Query("filter") type: String): List<MarsProperty>
 }
 // TODO (04) Create the MarsApi object using Retrofit to implement the MarsApiService
 object MarsApi {
